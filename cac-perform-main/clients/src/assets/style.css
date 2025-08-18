@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+    --color-blue-ycube: #043C5D;
+    --color-blue-ycube-1: #4f768d;
+    --color-green-ycube-1: #ABCAA9;
+    --color-green-ycube: #589654;
+    --color-gray-ycube: #F2F2F2;
+    --color-gray-ycube-1: #B2B2B2;
+}

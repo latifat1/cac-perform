@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test des modifications CAC-Perform</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .download-btn { background-color: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test des modifications CAC-Perform</h1>
+    
+    <div class="test-section success">
+        <h2>✅ Modifications appliquées avec succès</h2>
+        <p>Toutes les modifications demandées ont été appliquées :</p>
+        <ul>
+            <li><strong>Revue analytique :</strong> Colonnes EFI et Significatif remplacées par Commentaire</li>
+            <li><strong>Contrôle d'intangibilité :</strong> 6 colonnes (Compte, Bilan ouverture N, Bilan clôture N-1, Écarts, Justification, Conclusion audit)</li>
+            <li><strong>Style harmonisé :</strong> Tous les tableaux ont maintenant le même style (couleurs, bordures, centrage)</li>
+            <li><strong>Boutons de téléchargement :</strong> CSV disponible pour tous les tableaux</li>
+            <li><strong>Gestion des fichiers :</strong> Correction de l'erreur "Network error" lors de la création de mission</li>
+        </ul>
+    </div>
+
+    <div class="test-section info">
+        <h2>📊 Exemple de tableau Revue analytique</h2>
+        <button class="download-btn" onclick="exportToCsv(revueData, 'revue_analytique_test')">Télécharger (CSV)</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Compte</th>
+                    <th>Libellé</th>
+                    <th>N</th>
+                    <th>N-1</th>
+                    <th>Δ</th>
+                    <th>Δ %</th>
+                    <th>Commentaire</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>10110000</td>
+                    <td>CAPITAL SOUSCRIT</td>
+                    <td>0</td>
+                    <td>-5000000</td>
+                    <td>5000000</td>
+                    <td>100.0%</td>
+                    <td>Variation significative du capital</td>
+                </tr>
+                <tr>
+                    <td>21310000</td>
+                    <td>LOGICIEL</td>
+                    <td>131682</td>
+                    <td>131682</td>
+                    <td>0</td>
+                    <td>0.0%</td>
+                    <td>Pas de variation</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="test-section info">
+        <h2>🔍 Exemple de tableau Contrôle d'intangibilité</h2>
+        <button class="download-btn" onclick="exportToCsv(intangibiliteData, 'controle_intangibilite_test')">Télécharger (CSV)</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Compte</th>
+                    <th>Bilan ouverture (N)</th>
+                    <th>Bilan clôture (N-1)</th>
+                    <th>Écarts</th>
+                    <th>Justification</th>
+                    <th>Conclusion audit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>10110000</td>
+                    <td>0</td>
+                    <td>-5000000</td>
+                    <td>5000000</td>
+                    <td>Appel de capital</td>
+                    <td>Justifié par les documents</td>
+                </tr>
+                <tr>
+                    <td>21310000</td>
+                    <td>131682</td>
+                    <td>131682</td>
+                    <td>0</td>
+                    <td>Pas de mouvement</td>
+                    <td>Conforme</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="test-section info">
+        <h2>📋 Instructions de test</h2>
+        <ol>
+            <li><strong>Démarrer le backend :</strong> <code>cd api && python app.py</code></li>
+            <li><strong>Démarrer le frontend :</strong> <code>cd clients && pnpm dev</code></li>
+            <li><strong>Se connecter :</strong> Utiliser les identifiants de test</li>
+            <li><strong>Créer une mission :</strong> Importer deux fichiers Excel de balance (N et N-1)</li>
+            <li><strong>Vérifier les tableaux :</strong> Onglets "Revue analytique", "Contrôle de cohérence", "Contrôle d'intangibilité"</li>
+            <li><strong>Tester le téléchargement :</strong> Boutons "Télécharger (CSV)" sur chaque tableau</li>
+        </ol>
+    </div>
+
+    <script>
+        // Données de test pour le téléchargement CSV
+        const revueData = [
+            { compte: '10110000', libelle: 'CAPITAL SOUSCRIT', n: 0, n1: -5000000, delta: 5000000, delta_pct: 100.0, commentaire: 'Variation significative du capital' },
+            { compte: '21310000', libelle: 'LOGICIEL', n: 131682, n1: 131682, delta: 0, delta_pct: 0.0, commentaire: 'Pas de variation' }
+        ];
+
+        const intangibiliteData = [
+            { compte: '10110000', ouverture_n: 0, cloture_n1: -5000000, ecart: 5000000, justification: 'Appel de capital', conclusion_audit: 'Justifié par les documents' },
+            { compte: '21310000', ouverture_n: 131682, cloture_n1: 131682, ecart: 0, justification: 'Pas de mouvement', conclusion_audit: 'Conforme' }
+        ];
+
+        function exportToCsv(data, filename) {
+            const csvContent = data.map(row => Object.values(row).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
