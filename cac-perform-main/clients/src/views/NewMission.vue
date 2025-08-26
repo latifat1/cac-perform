@@ -42,6 +42,15 @@ async function addMission() {
         notyf.trigger("Téléversez exactement 2 fichiers: d'abord la balance N, puis la balance N-1", 'info')
         return
     }
+    
+    // Vérifier que les fichiers sont au bon format Excel
+    const validFormats = ['.xlsx']
+    const invalidFiles = files.filter(f => !validFormats.some(format => f.name.toLowerCase().endsWith(format)))
+    if (invalidFiles.length > 0) {
+        notyf.trigger(`Format de fichier non supporté: ${invalidFiles.map(f => f.name).join(', ')}. Format accepté: ${validFormats.join(', ')}`, 'error')
+        return
+    }
+    
     if (!field.value.annee_auditee || !field.value.date_debut || !field.value.date_fin) {
         notyf.trigger("Renseignez l'année auditée et les dates de mission", 'info')
         return
@@ -87,7 +96,7 @@ function back() {
                     </div>
                     <div class="w-1/2 flex flex-col justify-end">
                         <label for="" class="text-xs uppercase font-bold">Importer une balance</label>
-                        <input type="file" id="file" class="sr-only" @change="onFileChange1">
+                        <input type="file" id="file" class="sr-only" accept=".xlsx" @change="onFileChange1">
                         <label for="file" class="w-full border-2 border-blue-ycube rounded-lg pl-2 focus:outline-none focus:ring-0 h-10">
                             <div>
                                 <span v-if="selectedFile[0]" class="mt-2 block text-xs select-none">{{ selectedFile[0].name }}</span>

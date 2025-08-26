@@ -18,6 +18,30 @@ def revue_analytique_route(id_mission):
     result = cls.revue_analytique(id_mission)
     return make_response(jsonify({"response": result}), 200)
 
+@mission.put('/revue_analytique/<id_mission>/commentaire')
+def update_commentaire_route(id_mission):
+    """
+    Met à jour le commentaire personnalisé pour un compte spécifique
+    """
+    try:
+        data = request.get_json()
+        numero_compte = data.get('numero_compte')
+        commentaire_perso = data.get('commentaire_perso')
+        
+        if not numero_compte:
+            return make_response(jsonify({"error": "Numéro de compte requis"}), 400)
+        
+        cls = Mission()
+        success = cls.update_commentaire_perso(id_mission, numero_compte, commentaire_perso)
+        
+        if success:
+            return make_response(jsonify({"response": "Commentaire mis à jour avec succès"}), 200)
+        else:
+            return make_response(jsonify({"error": "Échec de la mise à jour du commentaire"}), 500)
+            
+    except Exception as e:
+        return make_response(jsonify({"error": f"Erreur serveur: {str(e)}"}), 500)
+
 @mission.get('/controle_coherence/<id_mission>')
 def controle_coherence_route(id_mission):
     cls = Mission()
@@ -35,22 +59,41 @@ def controle_intangibilite_route(id_mission):
 # =========================
 @mission.post('/nouvelle_mission')
 def new_assign():
-    uploaded_files = request.files.getlist('files[]')
-    annee_auditee = request.form['annee_auditee']
-    id_client = request.form['id']
-    date_debut = request.form['date_debut']
-    date_fin = request.form['date_fin']
+    try:
+        uploaded_files = request.files.getlist('files[]')
+        annee_auditee = request.form.get('annee_auditee')
+        id_client = request.form.get('id')
+        date_debut = request.form.get('date_debut')
+        date_fin = request.form.get('date_fin')
+        
+        # Validation des données reçues
+        if not uploaded_files or len(uploaded_files) < 2:
+            return make_response(jsonify({"error": "Au moins 2 fichiers de balance sont requis (N et N-1)"}), 400)
+        
+        if not all([annee_auditee, id_client, date_debut, date_fin]):
+            return make_response(jsonify({"error": "Tous les champs sont requis"}), 400)
+        
+        # Filtrer les fichiers valides (non vides)
+        valid_files = [f for f in uploaded_files if f and f.filename]
+        if len(valid_files) < 2:
+            return make_response(jsonify({"error": f"Seulement {len(valid_files)} fichier(s) valide(s) reçu(s), 2 requis"}), 400)
+        
+        print(f"Fichiers reçus: {[f.filename for f in valid_files]}")
+        print(f"Données reçues: annee={annee_auditee}, client={id_client}, debut={date_debut}, fin={date_fin}")
+        
+        cls = Mission()
+        donnees = cls.nouvelle_mission(
+            valid_files, annee_auditee, id_client, date_debut, date_fin
+        )
 
-    cls = Mission()
-    donnees = cls.nouvelle_mission(
-        uploaded_files, annee_auditee, id_client, date_debut, date_fin
-    )
-
-    if donnees:
-        res = "test"
-        return make_response(jsonify(donnees, res), 200)
-    else:
-        return make_response(jsonify({"response": "Nop"}), 200)
+        if donnees:
+            return make_response(jsonify({"success": True, "data": donnees}), 200)
+        else:
+            return make_response(jsonify({"error": "Erreur lors de la création de la mission"}), 500)
+            
+    except Exception as e:
+        print(f"Erreur dans new_assign: {str(e)}")
+        return make_response(jsonify({"error": f"Erreur serveur: {str(e)}"}), 500)
 
 # =========================
 # Grouping (si encore utilisé)

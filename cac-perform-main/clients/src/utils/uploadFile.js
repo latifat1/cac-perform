@@ -20,13 +20,29 @@ export async function uploadFile(annee_auditee, balances, date_debut, date_fin, 
     let isUploaded = null;
 
     try {
+        console.log("Envoi de la requête vers:", `/mission/nouvelle_mission`);
+        console.log("FormData contenu:", {
+            annee_auditee: formData.get('annee_auditee'),
+            date_debut: formData.get('date_debut'),
+            date_fin: formData.get('date_fin'),
+            id: formData.get('id'),
+            fichiers: validFiles.map(f => f.name)
+        });
+        
         const response = await axios.post(`/mission/nouvelle_mission`, formData, config);
+        console.log("Réponse reçue:", response.data);
+        
         if (response.status === 200) {
-            isUploaded = response.data;
+            if (response.data.success) {
+                isUploaded = response.data.data;
+            } else {
+                throw new Error(response.data.error || "Erreur inconnue");
+            }
         }
     } catch (error) {
-        const msg = error?.response?.data?.error || error?.response?.data || error.message;
-        alert(msg);
+        console.error("Erreur lors de l'upload:", error);
+        const msg = error?.response?.data?.error || error?.response?.data?.message || error.message || "Erreur réseau";
+        alert(`Erreur: ${msg}`);
     }
 
     return isUploaded;
